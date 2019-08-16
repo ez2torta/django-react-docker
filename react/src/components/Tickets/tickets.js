@@ -31,18 +31,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 class TicketList extends React.Component {
-  constructor (props) {
-    super(props)
-    // No llames this.setState() aquí!
-    this.state = {
-      columns: this.columnParser(),
-      data: [
-        { user: { name: 'Usuario1', id: 1 }, ticket: 63, taken: Date(Date.now()).toString(), wea_id: 3 },
-        { user: { name: 'Usuario2', id: 2 }, ticket: 64, taken: Date(Date.now()).toString() }
-      ]
-    }
-  }
-
   userName (user) {
     return !isEmpty(user) ? user.first_name + user.last_name : ''
   }
@@ -75,15 +63,15 @@ class TicketList extends React.Component {
         )
       },
 
-      { title: 'Tomado',
+      { title: 'Estado',
         field: 'pedido',
-        render: rowData => <span>{rowData.pedido === 1 ? 'Tomado' : 'Libre'}</span>,
+        render: rowData => <span>{rowData.pedido === 1 ? 'Pedido' : 'Libre'}</span>,
         editComponent: props => (
           <Select value={props.value ? props.value : {}}
-            renderValue={pedido => pedido === 1 ? 'Tomado' : 'Libre'}
+            renderValue={pedido => pedido === 1 ? 'Pedido' : 'Libre'}
             onChange={e => props.onChange(e.target.value)}>
             <MenuItem value={1}>
-                Tomado
+                Pedido
             </MenuItem>
             <MenuItem value={0}>
                 Libre
@@ -97,19 +85,33 @@ class TicketList extends React.Component {
   componentDidMount () {
     const token = this.props.user && this.props.user.token ? this.props.user.token : null
     const data = { token: token }
-    this.props.listUsers(data)
-    this.props.listTicket(data)
+    if (token) {
+      this.props.listUsers(data)
+      this.props.listTicket(data)
+    }
   }
 
   actions () {
     // si no es admin
     if (!this.isAdmin()) {
+      const token = this.props.user.token
       return [
-        {
+        rowData => ({
           icon: 'check',
-          tooltip: 'Tomar Ticket',
-          onClick: (event, rowData) => alert('You saved ' + rowData.name) // TODO
+          tooltip: 'Pedir Ticket',
+          disabled: rowData.pedido === 1,
+          onClick: (event, rowData) => {
+            // alert('You saved ' + rowData) // TODO
+            console.log(rowData)
+            const data = {
+              user_id: rowData.user.id,
+              id: rowData.id,
+              pedido: rowData.pedido === 1 ? 0 : 1
+            }
+            this.props.editTicket({ token: token, ticketData: data })
+          }
         }
+        )
       ]
     } else {
       return []
@@ -134,7 +136,6 @@ class TicketList extends React.Component {
           new Promise(resolve => {
             const data = newData
             data.user_id = newData.user.id
-            data.ticketId = oldData.ticket
             setTimeout(() => {
               resolve()
               this.props.editTicket({ token: token, ticketData: data })
