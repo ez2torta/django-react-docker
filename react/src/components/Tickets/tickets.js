@@ -3,7 +3,7 @@ import MaterialTable from 'material-table'
 import { connect } from 'react-redux'
 import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { isEmpty, filter, map } from 'lodash'
+import { isEmpty, filter } from 'lodash'
 import { Redirect } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Select from '@material-ui/core/Select'
@@ -43,34 +43,54 @@ class TicketList extends React.Component {
     }
   }
 
+  userName (user) {
+    return !isEmpty(user) ? user.first_name + user.last_name : ''
+  }
+
   columnParser () {
-    // const userList = this.props.userList
-    const userList = [
-      { name: 'Usuario1', id: 1 },
-      { name: 'Usuario2', id: 2 },
-      { name: 'Usuario3', id: 3 }
-    ]
+    const userList = this.props.userList
+
     return [
+      { title: 'Ticket',
+        field: 'id',
+        type: 'numeric',
+        readonly: true,
+        editable: 'never' },
       {
         title: 'Usuario',
         field: 'user',
         // editable: 'onAdd',
-        render: rowData => <span>{rowData.user.name}</span>, // ver lookup?
+        render: rowData => <span>{this.userName(rowData.user)}</span>, // ver lookup?
         editComponent: props => (
           <Select value={props.value ? props.value : {}}
-            renderValue={user => user.name}
+            renderValue={user => this.userName(user)}
             onChange={e => props.onChange(e.target.value)}>
             {userList.map(user =>
               <MenuItem value={user}
                 key={user.id}>
-                {user.name}
+                {this.userName(user)}
               </MenuItem>)
             }
           </Select>
         )
       },
-      { title: 'Ticket', field: 'ticket', type: 'numeric' },
-      { title: 'Tomado', field: 'pedido', type: 'numeric' }
+
+      { title: 'Tomado',
+        field: 'pedido',
+        render: rowData => <span>{rowData.pedido === 1 ? 'Tomado' : 'Libre'}</span>,
+        editComponent: props => (
+          <Select value={props.value ? props.value : {}}
+            renderValue={pedido => pedido === 1 ? 'Tomado' : 'Libre'}
+            onChange={e => props.onChange(e.target.value)}>
+            <MenuItem value={1}>
+                Tomado
+            </MenuItem>
+            <MenuItem value={0}>
+                Libre
+            </MenuItem>
+          </Select>
+        )
+      }
     ]
   }
 
@@ -103,16 +123,21 @@ class TicketList extends React.Component {
       return {
         onRowAdd: newData =>
           new Promise(resolve => {
+            const data = newData
+            data.user_id = newData.user.id
             setTimeout(() => {
               resolve()
-              this.props.createTicket({ token: token, ticketData: newData })
+              this.props.createTicket({ token: token, ticketData: data })
             }, 600)
           }),
         onRowUpdate: (newData, oldData) =>
           new Promise(resolve => {
+            const data = newData
+            data.user_id = newData.user.id
+            data.ticketId = oldData.ticket
             setTimeout(() => {
               resolve()
-              this.props.editTicket({ token: token, ticketData: newData })
+              this.props.editTicket({ token: token, ticketData: data })
             }, 600)
           }),
         onRowDelete: oldData => {
@@ -120,7 +145,7 @@ class TicketList extends React.Component {
           return new Promise(resolve => {
             setTimeout(() => {
               resolve()
-              const ticketId = oldData.ticket
+              const ticketId = oldData.id
               this.props.deleteTicket({ token: token, ticketId: ticketId })
             }, 600)
           })
@@ -135,14 +160,13 @@ class TicketList extends React.Component {
     const user = this.props.user
     if (!isEmpty(user)) {
       const groups = user.user_data.groups
-      return isEmpty(filter(groups, (item) => item.name === 'Admins'))
+      return !isEmpty(filter(groups, (item) => item.name === 'Admins'))
     } else {
       return false
     }
   }
 
   render () {
-    const state = this.state
     const user = this.props.user
     const loading = this.props.loading
     if (isEmpty(user)) {
@@ -151,13 +175,17 @@ class TicketList extends React.Component {
     if (loading) {
       return <CircularProgress />
     }
+    const columns = this.columnParser()
+
+    const data = this.props.tickets
     return (
       <Container component='main' >
         <CssBaseline />
         <MaterialTable
           title='Tickets'
-          columns={state.columns}
-          data={state.data}
+          columns={columns}
+          data={data}
+          options={{ pageSize: 10 }}
           actions={this.actions.bind(this)()}
           editable={this.editable.bind(this)()}
         />

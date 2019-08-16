@@ -11,8 +11,8 @@ import Tickets from '../Tickets/tickets'
 const Main = () => (
   <main>
     <Switch>
-      <Route exact path='/' component={Login}/>
-      <Route path='/tickets' component={Tickets}/>
+      <Route exact path='/' component={Login} />
+      <Route path='/tickets' component={Tickets} />
     </Switch>
   </main>
 )
