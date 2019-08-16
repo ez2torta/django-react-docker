@@ -3,7 +3,7 @@ import MaterialTable from 'material-table'
 import { connect } from 'react-redux'
 import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { isEmpty, filter } from 'lodash'
+import { isEmpty, filter, head } from 'lodash'
 import { Redirect } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Select from '@material-ui/core/Select'
@@ -49,6 +49,7 @@ class TicketList extends React.Component {
         field: 'user',
         // editable: 'onAdd',
         render: rowData => <span>{this.userName(rowData.user)}</span>, // ver lookup?
+        initialEditValue: head(userList),
         editComponent: props => (
           <Select value={props.value ? props.value : {}}
             renderValue={user => this.userName(user)}
@@ -93,7 +94,8 @@ class TicketList extends React.Component {
 
   actions () {
     // si no es admin
-    if (!this.isAdmin()) {
+    const isAdmin = this.isAdmin()
+    if (!isAdmin) {
       const token = this.props.user.token
       return [
         rowData => ({
@@ -101,8 +103,6 @@ class TicketList extends React.Component {
           tooltip: 'Pedir Ticket',
           disabled: rowData.pedido === 1,
           onClick: (event, rowData) => {
-            // alert('You saved ' + rowData) // TODO
-            console.log(rowData)
             const data = {
               user_id: rowData.user.id,
               id: rowData.id,

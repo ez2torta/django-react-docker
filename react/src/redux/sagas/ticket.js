@@ -45,11 +45,6 @@ function deleteCall (callData) {
   return request.delete('/tickets/' + callData.ticketId)
 }
 
-function assignCall (callData) {
-  // callData => token, ticketID
-  const request = client(callData.token)
-  return request.post(process.env.REACT_APP_API_URL + '/api/tickets/assign', callData.ticketId)
-}
 
 function * callSagaGen (action, callType, callFunc) {
   try {
@@ -81,10 +76,7 @@ export function * deleteTicket (action) {
   yield call(callSagaGen, action, 'DELETE_TICKET_RESPONSE', deleteCall)
   yield call(callSagaGen, action, 'LIST_TICKET_RESPONSE', listCall)
 }
-export function * assignTicket (action) {
-  yield call(callSagaGen, action, 'ASSIGN_TICKET_RESPONSE', assignCall)
-  yield call(callSagaGen, action, 'LIST_TICKET_RESPONSE', listCall)
-}
+
 export function * listUsers (action) {
   yield call(callSagaGen, action, 'LIST_USERS_RESPONSE', listUsersCall)
 }
@@ -94,6 +86,5 @@ export const ticketSagas = [
   takeEvery('CREATE_TICKET_REQUEST', createTicket),
   takeEvery('EDIT_TICKET_REQUEST', editTicket),
   takeEvery('DELETE_TICKET_REQUEST', deleteTicket),
-  takeEvery('ASSIGN_TICKET_REQUEST', assignTicket),
   takeEvery('LIST_USERS_REQUEST', listUsers)
 ]
