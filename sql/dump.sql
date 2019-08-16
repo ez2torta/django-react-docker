@@ -127,7 +127,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$100000$6x1hU7jwghy9$jL+B4RJ8ZVHIsxFv2o/LMUeLHNVn0iX+IgIVzgrcUyc=','2019-08-16 01:35:27.661450',1,'root','','','',1,1,'2019-08-14 07:45:18.763612'),(2,'pbkdf2_sha256$100000$IMYbwncqSGec$cK1stifeEkmCS2Seit7u0cV8O3QPBphm3qy6rhhvdJM=','2019-08-14 17:05:14.000000',1,'admin','','','admin@admin.cl',1,1,'2019-08-14 16:38:24.000000'),(3,'pbkdf2_sha256$100000$yynQNbCQA2g9$vy1XF85wer6k8m0cs6h3l1CLo1BCgCcld8wZbRPKTrQ=',NULL,0,'user','','','user@user.cl',0,1,'2019-08-14 17:23:28.000000');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$100000$6x1hU7jwghy9$jL+B4RJ8ZVHIsxFv2o/LMUeLHNVn0iX+IgIVzgrcUyc=','2019-08-16 01:35:27.661450',1,'root','root','root1','',1,1,'2019-08-14 07:45:18.763612'),(2,'pbkdf2_sha256$100000$IMYbwncqSGec$cK1stifeEkmCS2Seit7u0cV8O3QPBphm3qy6rhhvdJM=','2019-08-14 17:05:14.000000',1,'admin','Admin','instrador','admin@admin.cl',1,1,'2019-08-14 16:38:24.000000'),(3,'pbkdf2_sha256$100000$yynQNbCQA2g9$vy1XF85wer6k8m0cs6h3l1CLo1BCgCcld8wZbRPKTrQ=',NULL,0,'user','Usuario','Uno','user@user.cl',0,1,'2019-08-14 17:23:28.000000');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -390,7 +390,7 @@ CREATE TABLE `project_ticket` (
   PRIMARY KEY (`id`),
   KEY `project_ticket_user_id_ce9e05ec_fk_auth_user_id` (`user_id`),
   CONSTRAINT `project_ticket_user_id_ce9e05ec_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -399,7 +399,7 @@ CREATE TABLE `project_ticket` (
 
 LOCK TABLES `project_ticket` WRITE;
 /*!40000 ALTER TABLE `project_ticket` DISABLE KEYS */;
-INSERT INTO `project_ticket` VALUES (1,1,3),(2,0,3),(3,1,2),(4,1,3),(5,1,3),(7,0,3),(8,0,3),(9,1,3);
+INSERT INTO `project_ticket` VALUES (1,1,3),(2,1,3),(4,0,3),(8,0,3),(9,1,3),(10,1,1),(11,0,3),(12,1,2);
 /*!40000 ALTER TABLE `project_ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -412,4 +412,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-16  3:56:42
+-- Dump completed on 2019-08-16  8:22:02
