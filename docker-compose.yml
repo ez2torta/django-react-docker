@@ -13,6 +13,8 @@ services:
       - myvolume:/var/lib/mysql
   app:
     build: .
+    stdin_open: true
+    tty: true
     volumes:
       - .:/app
     ports:

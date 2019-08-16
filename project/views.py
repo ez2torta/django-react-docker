@@ -33,13 +33,13 @@ def login(request):
             # Buscar Usuario por correo?
             find_user = User.objects.get(email=username)
             if find_user:
-                #Encontre el weon, tratar de autenticar
+                # Encontre el usuario, tratar de autenticar
                 user = authenticate(username=find_user.username, password=password)
                 if not user:
                     return Response({'error': 'Invalid Credentials'},
                                     status=HTTP_404_NOT_FOUND)    
         except:
-            #no encontre al weon, responder 404
+            # No encontre el usuario, responder 404
             return Response({'error': 'Invalid Credentials'},
                             status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
@@ -65,12 +65,29 @@ class GroupViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+    def get_queryset_for_usuarios(self):
+        return Ticket.objects.none()
+
 class TicketViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    # def get_queryset_for_admins(self):
-    #     return [User.objects.all().first()]
+    # Quiero que el usuario cree tickets?
+    def perform_create_for_usuarios(self, serializer):
+        serializer.save(user=self.request.user)
+
+    # El usuario si debe ser capaz de actualizar tickets pero solo los suyos
+    def perform_update_for_usuarios(self, serializer):
+        serializer.save(user=self.request.user)
+
+    # El admin debe ser capaz de crear y actualizar todo
+    def perform_create_for_admins(self, serializer):
+        user_id = self.request.data['user_id']
+        serializer.save(user_id=user_id)
+
+    # Los mismos roles que la creación
+    def perform_update_for_admins(self, serializer):
+        self.perform_create_for_admins(serializer)
 
     def get_queryset_for_usuarios(self):
         user = self.request.user
