@@ -16,8 +16,6 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from drf_roles.mixins import RoleViewSetMixin
 
-
-
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -72,23 +70,21 @@ class TicketViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    # Quiero que el usuario cree tickets?
-    def perform_create_for_usuarios(self, serializer):
-        serializer.save(user=self.request.user)
-
-    # El usuario si debe ser capaz de actualizar tickets pero solo los suyos
-    def perform_update_for_usuarios(self, serializer):
-        serializer.save(user=self.request.user)
-
-    # El admin debe ser capaz de crear y actualizar todo
-    def perform_create_for_admins(self, serializer):
+    # Creación
+    def perform_create(self, serializer):
         user_id = self.request.data['user_id']
         serializer.save(user_id=user_id)
 
-    # Los mismos roles que la creación
-    def perform_update_for_admins(self, serializer):
-        self.perform_create_for_admins(serializer)
+    # Actualización
+    def perform_update(self, serializer):
+        user_id = self.request.data['user_id']
+        serializer.save(user_id=user_id)
 
+    # El usuario no debe ser capaz de borrar ?
+    def perform_delete_for_usuarios(self, serializer):
+        pass
+
+    # Limitar el queryset para los Usuarios, mas no los Admins
     def get_queryset_for_usuarios(self):
         user = self.request.user
         return Ticket.objects.filter(user=user)
