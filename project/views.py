@@ -2,7 +2,6 @@ from django.contrib.auth.models import User, Group
 from .models import Ticket
 from rest_framework import viewsets
 from .serializers import UserSerializer, GroupSerializer, TicketSerializer
-
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
@@ -28,20 +27,20 @@ def login(request):
     user = authenticate(username=username, password=password)
     if not user:
         try:
-            # Buscar Usuario por correo?
+            # Try finding user using email account
             find_user = User.objects.get(email=username)
             if find_user:
-                # Encontre el usuario, tratar de autenticar
                 user = authenticate(username=find_user.username, password=password)
                 if not user:
                     return Response({'error': 'Invalid Credentials'},
                                     status=HTTP_404_NOT_FOUND)    
         except:
-            # No encontre el usuario, responder 404
             return Response({'error': 'Invalid Credentials'},
                             status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key},
+    usuario = UserSerializer(user)
+    # Return token and user data
+    return Response({'token': token.key, 'user_data': usuario.data},
                     status=HTTP_200_OK)
 
 class UserViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
@@ -70,12 +69,10 @@ class TicketViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    # Creación (el usuario puede crear, pero sólo a su nombre?)
     def perform_create(self, serializer):
         user_id = self.request.data['user_id']
         serializer.save(user_id=user_id)
 
-    # Actualización
     def perform_update(self, serializer):
         user_id = self.request.data['user_id']
         serializer.save(user_id=user_id)
