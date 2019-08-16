@@ -7,8 +7,13 @@ A very simplistic demo of composing MySQL and Django containers.
 
 	# Run docker-compose. Optional use (-d) argument to run as daemon
     $ docker-compose up
+    # Create Database
+    $ docker-compose exec db mysql -u root -p -e 'CREATE DATABASE `ddm` DEFAULT CHARACTER SET = `utf8mb4`'
     # Restore MySQL Dump (Asks for password, default is root as exposed in docker-compose.yml)	
-    $ docker-compose exec db sh /sql/backup.sh
+    # If running not in daemon mode, open another terminal for running this
+    $ docker-compose exec db sh /sql/restore.sh
+
+Finally Browse to [http://localhost:9000](http://localhost:9000)
 
 # Backup Database
 
@@ -18,8 +23,12 @@ A very simplistic demo of composing MySQL and Django containers.
 
 	$ docker-compose exec db sh /sql/backup.sh
 
-Browse to [http://localhost:9000](http://localhost:9000)
 
 
-admin
-cocacola1
+# Default MySQL User
+	root root
+
+# Default Users for Django
+	root root
+	admin adminadmin
+	user useruser
