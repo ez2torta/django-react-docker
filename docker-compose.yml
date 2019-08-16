@@ -4,13 +4,11 @@ services:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: root
-      # MYSQL_DATABASE: djdocker
-      # MYSQL_USER: root
-      # MYSQL_PASSWORD: root
     ports:
       - 13306:3306
     volumes:
       - myvolume:/var/lib/mysql
+      - ./sql:/sql
   app:
     build: .
     stdin_open: true

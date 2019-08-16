@@ -70,7 +70,7 @@ class TicketViewSet(RoleViewSetMixin, viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    # Creación
+    # Creación (el usuario puede crear, pero sólo a su nombre?)
     def perform_create(self, serializer):
         user_id = self.request.data['user_id']
         serializer.save(user_id=user_id)
