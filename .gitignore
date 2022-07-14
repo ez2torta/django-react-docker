@@ -99,5 +99,5 @@ ENV/
 
 # mypy
 .mypy_cache/
-
+/react/node_modules
 /react/src/node_modules
