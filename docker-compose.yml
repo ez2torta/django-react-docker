@@ -21,7 +21,7 @@ services:
       - db
   react:
     build: ./react/
-    command: npm start
+    command: sh start-all.sh
     volumes:
       - ./react/:/usr/app/
       - /usr/app/node_modules
